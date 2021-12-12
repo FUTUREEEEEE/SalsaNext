@@ -12,6 +12,9 @@ import torch.nn as nn
 import torch.optim as optim
 from matplotlib import pyplot as plt
 from torch.autograd import Variable
+import sys
+sys.path.append(r"D:\Codes\github\SalsaNext\train")
+
 from common.avgmeter import *
 from common.logger import Logger
 from common.sync_batchnorm.batchnorm import convert_model

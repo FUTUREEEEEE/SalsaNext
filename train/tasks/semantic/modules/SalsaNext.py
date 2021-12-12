@@ -7,6 +7,23 @@ import torch
 import torch.nn as nn
 import torch.nn.functional as F
 
+class SELayer(nn.Module):
+    def __init__(self, channel, reduction=16):
+        super(SELayer, self).__init__()
+        self.avg_pool = nn.AdaptiveAvgPool2d(1)
+        self.fc = nn.Sequential(
+            nn.Linear(channel, channel // reduction, bias=False),
+            nn.ReLU(inplace=True),
+            nn.Linear(channel // reduction, channel, bias=False),
+            nn.Sigmoid()
+        )
+
+    def forward(self, x):
+        b, c, _, _ = x.size()
+        y = self.avg_pool(x).view(b, c)
+        y = self.fc(y).view(b, c, 1, 1)
+        return x * y.expand_as(x)
+
 class ResContextBlock(nn.Module):
     def __init__(self, in_filters, out_filters):
         super(ResContextBlock, self).__init__()
@@ -178,6 +195,7 @@ class SalsaNext(nn.Module):
         self.downCntx = ResContextBlock(5, 32)
         self.downCntx2 = ResContextBlock(32, 32)
         self.downCntx3 = ResContextBlock(32, 32)
+        self.se=SELayer(32)
 
         self.resBlock1 = ResBlock(32, 2 * 32, 0.2, pooling=True, drop_out=False)
         self.resBlock2 = ResBlock(2 * 32, 2 * 2 * 32, 0.2, pooling=True)
@@ -196,6 +214,7 @@ class SalsaNext(nn.Module):
         downCntx = self.downCntx(x)
         downCntx = self.downCntx2(downCntx)
         downCntx = self.downCntx3(downCntx)
+        downCntx=self.se(downCntx)
 
         down0c, down0b = self.resBlock1(downCntx)
         down1c, down1b = self.resBlock2(down0c)
@@ -212,3 +231,10 @@ class SalsaNext(nn.Module):
         logits = logits
         logits = F.softmax(logits, dim=1)
         return logits
+
+
+if __name__=='__main__':
+    print("init")
+    net=SalsaNext(19)
+    x=torch.zeros([1,5,2048,64])
+    out=net(x)
