@@ -10,7 +10,6 @@ import math
 import random
 from PIL import Image
 
-FILE_SPLIT = scan_file.split('/')
 try:
     import accimage
 except ImportError:
@@ -238,6 +237,7 @@ class SemanticKitti(Dataset):
     proj = (proj - self.sensor_img_means[:, None, None]
             ) / self.sensor_img_stds[:, None, None]
     proj = proj * proj_mask.float()
+
     additional_data_path='/media/cfzhao/Data/sematic_kitti/my_add_data/sequences'
     additional_data_path=os.path.join(additional_data_path,scan_file.split('/')[-3],scan_file.split('/')[-2],scan_file.split('/')[-1])
     proj_seg=torch.from_numpy(torch.load(additional_data_path))
