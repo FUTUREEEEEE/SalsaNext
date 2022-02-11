@@ -10,7 +10,7 @@ import torch.nn.functional as F
 class ResContextBlock(nn.Module):
     def __init__(self, in_filters, out_filters):
         super(ResContextBlock, self).__init__()
-        self.conv1 = nn.Conv2d(in_filters, out_filters, kernel_size=(1, 1), stride=1)
+        self.conv1 = nn.Conv2d(in_filters, out_filters, kernel_size=(3,15),stride=1,padding=[1,7])
         self.act1 = nn.LeakyReLU()
 
         self.conv2 = nn.Conv2d(out_filters, out_filters, (3,3), padding=1)
