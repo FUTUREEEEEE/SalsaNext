@@ -20,6 +20,7 @@ from tasks.semantic.modules.SalsaNext import *
 from tasks.semantic.modules.SalsaNextAdf import *
 from tasks.semantic.postproc.KNN import KNN
 
+os.environ["CUDA_VISIBLE_DEVICES"] = "0"
 
 class User():
   def __init__(self, ARCH, DATA, datadir, logdir, modeldir,split,uncertainty,mc=30):

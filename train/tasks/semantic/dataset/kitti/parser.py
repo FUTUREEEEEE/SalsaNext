@@ -10,6 +10,7 @@ import math
 import random
 from PIL import Image
 
+
 try:
     import accimage
 except ImportError:
@@ -237,9 +238,8 @@ class SemanticKitti(Dataset):
     proj = (proj - self.sensor_img_means[:, None, None]
             ) / self.sensor_img_stds[:, None, None]
     proj = proj * proj_mask.float()
-
     additional_data_path='/media/cfzhao/Data/sematic_kitti/my_add_data/sequences'
-    additional_data_path=os.path.join(additional_data_path,scan_file.split('/')[-3],scan_file.split('/')[-2],scan_file.split('/')[-1])
+    additional_data_path=os.path.join(additional_data_path,scan_file.split('/')[-3],scan_file.split('/')[-2],scan_file.split('/')[-1].split('.')[0]+'.pt')
     proj_seg=torch.from_numpy(torch.load(additional_data_path))
     proj = torch.cat([proj, proj_seg.float().view(1, 64, 2048).clone()], 0)
     # get name and sequence
